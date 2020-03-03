@@ -1,2 +1,2 @@
-# RudoRoemer-MachineLearning-IsingModel2D
+# MachineLearning-IsingModel2D
 MachineLearning to 2D Ising model
