@@ -9,5 +9,5 @@ https://docs.python.org/2/tutorial/floatingpoint.html#floating-point-arithmetic-
 ##### Note about the data stored
 Currently, it stores the configuration as a .png file and a .pkl file in which there is a dictionary. The dictionary has the key-value pairs of configuration, mean magnetization and mean energy. 
 ##### Goals for the next commit
-The next commit will be one-line reading the data function.
+The next commit will be one-line function that reads the data.
 
