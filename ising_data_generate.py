@@ -23,19 +23,19 @@ class IsingLattice:
     
     def __init__(self,lattice_size,J,h):
         
-        # In order to easily access the parameters: 
+        # In order to easily access the parameters:
         self.lattice_size = lattice_size
         self.num_sites = lattice_size*lattice_size
         self.J = J
         self.h = h
         
-        # We randomly initialize the lattice with 0's and 1's
+        # We randomly initialize the lattice with 0's and 1's
         lattice_state = np.random.choice([1,-1],size=(self.lattice_size,self.lattice_size))
         
         # We store the configuration 
         self.lattice_state = lattice_state
     
-    # The Methods 
+    # The Methods 
     # Plot function. This will help us easily see the lattice configuration.
     
     def plot_lattice(self, print_info=False): # print_info is Boolean. If it is true then we print info.
@@ -57,11 +57,11 @@ class IsingLattice:
     def flip_spin(self,i,j):
         self.lattice_state[i,j] *= -1
         
-    # Calculating energy of one spin at site (i,j)
+    # Calculating energy of one spin at site (i,j)
         
     def spin_energy(self,i,j):
         
-        # Spin at (i,j)
+        #Spin at (i,j)
         spin_ij = self.lattice_state[i,j]
         
         # Now we need to deal with the boundary spins. 
@@ -84,7 +84,7 @@ class IsingLattice:
             magnetic_field_term = - (self.h * spin_ij)
             return magnetic_field_term + interaction_term
     
-    # Calculating Total Lattice Energy
+    # Calculating Total Lattice Energy
     
     def energy(self):
         
@@ -96,7 +96,7 @@ class IsingLattice:
             for j in np.arange(self.lattice_size):
                 E = E + self.spin_energy(i,j)
                 
-        # But we counted neighbours twice here. So we need to correctly return. 
+        # But we counted neighbours twice here. So we need to correctly return. 
         # We divide by two 
         E = E / (2.0) / self.num_sites
         if self.h==0:
@@ -116,7 +116,7 @@ class IsingLattice:
 def scan_lattice(ising_lattice, T):
     
     for k in np.arange(ising_lattice.num_sites):
-        # We choose a random site
+        # We choose a random site
         lattice_size_power = int(np.log2(ising_lattice.lattice_size))
         i = random.getrandbits(lattice_size_power)
         j = random.getrandbits(lattice_size_power)
@@ -141,14 +141,14 @@ def monte_carlo_simulation(ising_lattice, T, num_scans, num_scans_4_equilibrium,
 
     start_time = time.time()
     
-    # The first three arguments are self-explanatory. 
+    # The first three arguments are self-explanatory. 
     # The last one is the number of scans we need to do
     # Before we reach equilibrium. Therefore we do not
     # need to collect data at these steps. 
     if print_info:
         ising_lattice.print_info()
     
-    # We start by collecting <E> and <m> data. In order to 
+    # We start by collecting <E> and <m> data. In order to 
     # calculate these, we record energy and magnetization 
     # after we reach equilibrium.
     
@@ -174,7 +174,7 @@ def monte_carlo_simulation(ising_lattice, T, num_scans, num_scans_4_equilibrium,
             lattice_configs[increment_records] = ising_lattice.lattice_state
             increment_records += 1
     
-    # Now we can get the <E> and <m>
+    # Now we can get the <E> and <m>
     
   
     
@@ -241,7 +241,7 @@ def collect_monte_carlo_data(lattice_size,J,h, T_init, T_final, T_increment, num
     print("Lattice size: ", lattice_size , "x", lattice_size, ". J: ", J, " h: ", h , "\n")
     
     # Let's scale it up
-    # T array is going to be then
+    # T array is going to be then
     T = np.arange(T_init*TEMPERATURE_SCALE, (T_final+T_increment)*TEMPERATURE_SCALE, T_increment*TEMPERATURE_SCALE).astype(int)
     
     # Number of samples are calculated
@@ -264,7 +264,7 @@ def collect_monte_carlo_data(lattice_size,J,h, T_init, T_final, T_increment, num
         # Now we go through with the Monte-Carlo Simulation
         lattice_configs, energy_records, magnetization_records = monte_carlo_simulation(ising_lattice,scale_down_T,num_scans,num_scans_4_equilibrium,frequency_sweeps_to_collect_magnetization)
                 
-        # We write these down to a file
+        # We write these down to a file
         # We create a dictionary with the following key-value pairs
         data_sample = {'lattice_configuration' : lattice_configs,
                        'energy' : energy_records,
@@ -304,17 +304,17 @@ def collect_monte_carlo_data(lattice_size,J,h, T_init, T_final, T_increment, num
 ##############################################################################################################
 ################## BELOW THIS PART IS TO BE CHANGED ACCORDING TO THE DATA WE NEED TO GENERATE ################
 
-# HERE IS AN EXAMPLE ON HOW TO USE THE FUNCTION
-# IT GENERATES FOR ONE SEED
+# HERE IS AN EXAMPLE ON HOW TO USE THE FUNCTION
+# IT GENERATES FOR ONE SEED
 
-# Lattice size, J, h are physical parameters. T_init=T_final is allowed and gets only one temperature data.
-# T_increment CANNOT BE ZERO
+# Lattice size, J, h are physical parameters. T_init=T_final is allowed and gets only one temperature data.
+# T_increment CANNOT BE ZERO
 # num_scans is the number of sweeps we do AFTER thermalization
 # num_scans_4_equilibrium is the number of sweeps TO thermalize the system
-# frequency_sweeps_to_collect_magnetization is the frequency of saving the configurations.
+# frequency_sweeps_to_collect_magnetization is the frequency of saving the configurations.
 # e.g. save each 50th configuration after the thermalization
-# SEED is a global variable for convenience and better control
-# For one (seed,temperature) tuple with the number of sweeps and frequency left unchanged
+# SEED is a global variable for convenience and better control
+# For one (seed,temperature) tuple with the number of sweeps and frequency left unchanged
 # We end up with 21 different configurations saved as .pkl files. 
 
 SEED = 2
