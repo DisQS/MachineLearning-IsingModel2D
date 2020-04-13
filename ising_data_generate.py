@@ -1,3 +1,7 @@
+#!python3
+# SC-RTP commands
+# module load Anaconda3
+
 import numpy as np
 import matplotlib.pyplot as plt
 import random
@@ -10,15 +14,14 @@ import os
 
 MAIN_DIRECTORY = "ising_data"
 
-
 # This is the scale we are using in order to prevent floating 
 # point errors in temperature values. Below is a default value
 
 TEMPERATURE_SCALE = 1000
 
-
 class IsingLattice:
-    
+
+    # ---------------------------------------------------------------------------------------------------------
     # Initializer. Parameter n corresponds to the lattice size. 
     
     def __init__(self,lattice_size,J,h):
@@ -35,7 +38,11 @@ class IsingLattice:
         # We store the configuration 
         self.lattice_state = lattice_state
     
+    # ---------------------------------------------------------------------------------------------------------
     # The Methods 
+    # ---------------------------------------------------------------------------------------------------------
+
+    # ---------------------------------------------------------------------------------------------------------
     # Plot function. This will help us easily see the lattice configuration.
     
     def plot_lattice(self, print_info=False): # print_info is Boolean. If it is true then we print info.
@@ -46,17 +53,20 @@ class IsingLattice:
         if print_info:
             self.print_info()
     
+    # ---------------------------------------------------------------------------------------------------------
     # Now we define print_info() method. It will print all the information about the lattice.
     
     def print_info(self):
         
         print("Lattice size: ", self.lattice_size , "x", self.lattice_size, ". J: ", self.J, " h: ", self.h )
     
+    # ---------------------------------------------------------------------------------------------------------
     # A spin flipper at site (i,j) method
     
     def flip_spin(self,i,j):
         self.lattice_state[i,j] *= -1
         
+    # ---------------------------------------------------------------------------------------------------------
     # Calculating energy of one spin at site (i,j)
         
     def spin_energy(self,i,j):
@@ -83,7 +93,8 @@ class IsingLattice:
         else:
             magnetic_field_term = - (self.h * spin_ij)
             return magnetic_field_term + interaction_term
-    
+
+    # ---------------------------------------------------------------------------------------------------------    
     # Calculating Total Lattice Energy
     
     def energy(self):
@@ -106,12 +117,13 @@ class IsingLattice:
             E = (E - self.h * np.sum(self.lattice_state)) / self.num_sites
             return E
     
+    # ---------------------------------------------------------------------------------------------------------
     # Net magnetization
     
     def magnetization(self):
         return  np.abs(np.sum(self.lattice_state))/ (self.num_sites)
         
-
+# ---------------------------------------------------------------------------------------------------------
 # Boltzmann constant is fixed to 1.
 def scan_lattice(ising_lattice, T):
     
@@ -136,8 +148,12 @@ def scan_lattice(ising_lattice, T):
         if delta_E<0 or np.random.rand()<np.exp(-delta_E/T):
             # If the Metropolis Criteria holds, swap. 
             ising_lattice.flip_spin(i,j)
-    
-def monte_carlo_simulation(ising_lattice, T, num_scans, num_scans_4_equilibrium, frequency_sweeps_to_collect_magnetization, plot_result = False,print_info=False):
+
+# ---------------------------------------------------------------------------------------------------------    
+
+def monte_carlo_simulation(ising_lattice, T, num_scans, 
+            num_scans_4_equilibrium, frequency_sweeps_to_collect_magnetization, 
+            plot_result = False,print_info=False):
 
     start_time = time.time()
     
@@ -176,21 +192,19 @@ def monte_carlo_simulation(ising_lattice, T, num_scans, num_scans_4_equilibrium,
     
     # Now we can get the <E> and <m>
     
-  
-    
-    
     print("For T = ", T, "Simulation is executed in: ", " %s seconds " % round(time.time() - start_time,2))
     
     if plot_result:
         ising_lattice.plot_lattice()
     
-    
     return lattice_configs, energy_records, magnetization_records
 
+# ---------------------------------------------------------------------------------------------------------    
 
 def file_name(lattice_size,J,h,T,seed):
     return f'SQ_L_{lattice_size}_J_{J:.2f}_h_{h:.2f}_T_{T}_s_{seed}'
 
+# ---------------------------------------------------------------------------------------------------------    
 
 def write_to_sub_directory(quantity, file_name):
     
@@ -214,6 +228,8 @@ def write_to_sub_directory(quantity, file_name):
     os.chdir('..')
     os.chdir('..')
 
+# ---------------------------------------------------------------------------------------------------------    
+
 def save_image_to_sub_directory(data, directory_name, file_name):
     
     # Let us check if the path to data exists
@@ -235,6 +251,8 @@ def save_image_to_sub_directory(data, directory_name, file_name):
     # We go up into the original directory
     os.chdir('..')
     os.chdir('..')
+
+# ---------------------------------------------------------------------------------------------------------    
 
 def collect_monte_carlo_data(lattice_size,J,h, T_init, T_final, T_increment, num_scans, num_scans_4_equilibrium, frequency_sweeps_to_collect_magnetization):
 
@@ -274,35 +292,8 @@ def collect_monte_carlo_data(lattice_size,J,h, T_init, T_final, T_increment, num
         for img in np.arange(lattice_configs.shape[0]):
             save_image_to_sub_directory(lattice_configs[img].astype(np.uint8), file_name_lattice, file_name_lattice+"_n_"+f"%d"% (img*frequency_sweeps_to_collect_magnetization))
         
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-##############################################################################################################
-##############################################################################################################
-##############################################################################################################
-##############################################################################################################
-##############################################################################################################
-################## BELOW THIS PART IS TO BE CHANGED ACCORDING TO THE DATA WE NEED TO GENERATE ################
+# ---------------------------------------------------------------------------------------------------------    
+# BELOW THIS PART IS TO BE CHANGED ACCORDING TO THE DATA WE NEED TO GENERATE ############
 
 # HERE IS AN EXAMPLE ON HOW TO USE THE FUNCTION
 # IT GENERATES FOR ONE SEED
