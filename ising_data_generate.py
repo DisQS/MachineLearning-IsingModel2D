@@ -10,13 +10,12 @@ import os
 
 MAIN_DIRECTORY = "ising_data"
 
-##############################################################################################################
-################################################ THE MAIN CODE ###############################################
+################################################################################
+################################################ THE MAIN CODE #################
 
 class IsingLattice:
     
     # Initializer. Parameter n corresponds to the lattice size. 
-    
     def __init__(self,lattice_size,J,h):
         
         # In order to easily access the parameters: 
@@ -34,7 +33,8 @@ class IsingLattice:
     # The Methods 
     # Plot function. This will help us easily see the lattice configuration.
     
-    def plot_lattice(self, print_info=False): # print_info is Boolean. If it is true then we print info.
+    def plot_lattice(self, print_info=False): 
+    # print_info is Boolean. If it is true then we print info.
         
         plt.figure()
         plt.imshow(self.lattice_state)
@@ -46,7 +46,8 @@ class IsingLattice:
     
     def print_info(self):
         
-        print("Lattice size: ", self.lattice_size , "x", self.lattice_size, ". J: ", self.J, " h: ", self.h )
+        print("Lattice size: ", self.lattice_size , "x", self.lattice_size, 
+              ". J: ", self.J, " h: ", self.h )
     
     # A spin flipper at site (i,j) method
     
@@ -107,7 +108,7 @@ class IsingLattice:
     def magnetization(self):
         return  np.abs(np.sum(self.lattice_state))/ (self.num_sites)
         
-
+################################################################################
 # Boltzmann constant is fixed to 1.
 def scan_lattice(ising_lattice, T):
     
@@ -124,7 +125,6 @@ def scan_lattice(ising_lattice, T):
         #i = np.random.randint(ising_lattice.lattice_size)        
         #j = np.random.randint(ising_lattice.lattice_size)       
 
-
         # We calculate the energy difference if we flip
         E_initial = ising_lattice.spin_energy(i,j)
         ising_lattice.flip_spin(i,j)
@@ -139,8 +139,11 @@ def scan_lattice(ising_lattice, T):
             if delta_E<0 or np.random.rand()<np.exp(-delta_E/T):
                 # If the Metropolis Criteria holds, swap. 
                 ising_lattice.flip_spin(i,j)
-    
-def monte_carlo_simulation(ising_lattice, T, num_scans, num_scans_4_equilibrium, frequency_sweeps_to_collect_magnetization, plot_result = False,print_info=False):
+
+################################################################################    
+def monte_carlo_simulation(ising_lattice, T, num_scans, num_scans_4_equilibrium, \
+                           frequency_sweeps_to_collect_magnetization, \
+                           plot_result = False,print_info=False):
 
     start_time = time.time()
     
@@ -181,22 +184,19 @@ def monte_carlo_simulation(ising_lattice, T, num_scans, num_scans_4_equilibrium,
     
     # Now we can get the <E> and <m>
     
-  
-    
-    
-    print("For T = ", T, "Simulation is executed in: ", " %s seconds " % round(time.time() - start_time,2))
+    print("For T = ", T, "Simulation is executed in: ", " %s seconds " \
+          % round(time.time() - start_time,2))
     
     if plot_result:
         ising_lattice.plot_lattice()
     
-    
     return lattice_configs, energy_records, magnetization_records
 
-
+################################################################################
 def file_name(lattice_size,J,h,T,seed):
     return f'SQ_L_{lattice_size}_J_{J:.2f}_h_{h:.2f}_T_{T}_s_{seed}'
 
-
+################################################################################
 def write_to_sub_directory(quantity, file_name):
     
     # Let us check if the path to data exists
@@ -219,6 +219,7 @@ def write_to_sub_directory(quantity, file_name):
     os.chdir('..')
     os.chdir('..')
 
+################################################################################
 def save_image_to_sub_directory(data, directory_name, file_name):
     
     # Let us check if the path to data exists
@@ -241,7 +242,13 @@ def save_image_to_sub_directory(data, directory_name, file_name):
     os.chdir('..')
     os.chdir('..')
 
-def collect_monte_carlo_data(lattice_size,J,h, T_init, T_final, T_increment, num_scans, num_scans_4_equilibrium, frequency_sweeps_to_collect_magnetization):
+################################################################################
+def collect_monte_carlo_data(\
+       lattice_size, \
+       J,h, \
+       T_init, T_final, T_increment, \
+       num_scans, num_scans_4_equilibrium, \
+       frequency_sweeps_to_collect_magnetization):
 
     random.seed(SEED)
     np.random.seed(SEED)
