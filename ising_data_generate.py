@@ -145,7 +145,8 @@ def scan_lattice(ising_lattice, temperature):
         
         # Then we should flip the spin
         if temperature != 0:
-            if energy_change<=0 or np.random.rand()<=np.exp(-energy_change/temperature):
+            if energy_change<=0 or \
+                np.random.rand()<=np.exp(-energy_change/temperature):
                 # If the Metropolis Criteria holds, swap. 
                 ising_lattice.flip_spin(i,j)
 
@@ -278,9 +279,11 @@ def collect_monte_carlo_data(lattice_size,J,h, \
        (temp_final+temp_increment)*TEMPERATURE_SCALE, \
         temp_increment*TEMPERATURE_SCALE).astype(int)
     if temperature[0] == 0:
-        raise ValueError("ValueError exception thrown. Monte-Carlo does not work properly at T=0.")
+        raise ValueError("ValueError exception thrown. Monte-Carlo does not \
+            work properly at T=0.")
     elif temperature[0] < 0:
-        raise ValueError("ValueError exception thrown. T cannot be a negative value.")
+        raise ValueError("ValueError exception thrown. T cannot be a \
+            negative value.")
 
     if temperature[0]<1500:
         print("For low-temperatures, number of sweeps should be higher.")
@@ -353,9 +356,9 @@ SEED = 100
 collect_monte_carlo_data(lattice_size = 100 ,
                             J = 1.0 , 
                             h = 0.0 ,
-                            temp_init = 2.26 ,
-                            temp_final = 2.26,
-                            temp_increment = 0.26 ,
+                            temp_init = 2.27 ,
+                            temp_final = 2.27,
+                            temp_increment = 1 ,
                             num_scans = 1000 ,
                             num_scans_4_equilibrium = 1000 ,
                             frequency_sweeps_to_collect_magnetization = 50)
