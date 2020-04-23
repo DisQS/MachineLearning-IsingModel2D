@@ -203,6 +203,10 @@ def monte_carlo_simulation(ising_lattice,\
     return lattice_configs, energy_records, magnetization_records
 
 ###############################################################################
+def dir_name(lattice_size,J,h,temperature):
+#    return f'SQ_L_{lattice_size}_J_{J:.2f}_h_{h:.2f}_T_{temperature}_s_{seed}'
+    return f'SQ_L_{lattice_size}_J_{J:.2f}_h_{h:.2f}_T_{temperature}'
+
 def file_name(lattice_size,J,h,temperature,seed):
     return f'SQ_L_{lattice_size}_J_{J:.2f}_h_{h:.2f}_T_{temperature}_s_{seed}'
 
@@ -352,14 +356,14 @@ def collect_monte_carlo_data(lattice_size,J,h, \
 # - with the number of sweeps and frequency left unchanged -
 # We end up with 21 different configurations saved as .pkl files. 
 
-SEED = 100
+SEED = 101
 collect_monte_carlo_data(lattice_size = 100 ,
                             J = 1.0 , 
                             h = 0.0 ,
                             temp_init = 2.27 ,
                             temp_final = 2.27,
                             temp_increment = 1 ,
-                            num_scans = 1000 ,
+                            num_scans = 2000 ,
                             num_scans_4_equilibrium = 1000 ,
                             frequency_sweeps_to_collect_magnetization = 50)
 
