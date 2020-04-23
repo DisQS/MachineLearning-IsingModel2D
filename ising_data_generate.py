@@ -112,7 +112,7 @@ class IsingLattice:
 ###############################################################################
     # Net magnetization
     def magnetization(self):
-        return  np.abs(np.sum(self.lattice_state))/ (self.num_sites)
+        return  np.sum(self.lattice_state)/ (self.num_sites)
         
 ###############################################################################
 ###############################################################################
@@ -222,6 +222,30 @@ def write_to_sub_directory(quantity, file_name):
     os.chdir('..')
 
 ###############################################################################
+def write_txt_energy(quantity, file_name):
+    if not(os.path.exists(file_name)):
+        os.mkdir(file_name)
+    os.chdir(file_name)
+
+    file_name_txt = file_name + "_energy.txt"
+    np.savetxt(file_name_txt, quantity, delimiter=" , ",fmt='%1.3f')
+    
+    # We go up into the original directory
+    os.chdir('..')
+
+###############################################################################
+def write_txt_magnetization(quantity, file_name):
+    if not(os.path.exists(file_name)):
+        os.mkdir(file_name)
+    os.chdir(file_name)
+
+    file_name_txt = file_name + "_magnetization.txt"
+    np.savetxt(file_name_txt, quantity, delimiter=" , ",fmt='%1.3f')
+    
+    # We go up into the original directory
+    os.chdir('..')
+
+###############################################################################
 def save_image_to_sub_directory(data, directory_name, file_name):
     
     # We check if it exists, if not we make directory
@@ -293,7 +317,11 @@ def collect_monte_carlo_data(lattice_size,J,h, \
                        'energy' : energy_records,
                        'magnetization' : magnetization_records,
         } 
+
         write_to_sub_directory(data_sample,file_name_lattice)
+        write_txt_energy(data_sample['energy'], file_name_lattice)
+        write_txt_magnetization(data_sample['magnetization'], file_name_lattice)
+
         for img in np.arange(lattice_configs.shape[0]):
             file_name_img = file_name_lattice+"_n_"+f"%d"% \
                             (img*frequency_sweeps_to_collect_magnetization)
@@ -322,12 +350,12 @@ def collect_monte_carlo_data(lattice_size,J,h, \
 # We end up with 21 different configurations saved as .pkl files. 
 
 SEED = 100
-collect_monte_carlo_data(lattice_size = 15 ,
+collect_monte_carlo_data(lattice_size = 100 ,
                             J = 1.0 , 
                             h = 0.0 ,
-                            temp_init = 1.0 ,
-                            temp_final = 1.5 ,
-                            temp_increment = 0.5 ,
+                            temp_init = 2.26 ,
+                            temp_final = 2.26,
+                            temp_increment = 0.26 ,
                             num_scans = 1000 ,
                             num_scans_4_equilibrium = 1000 ,
                             frequency_sweeps_to_collect_magnetization = 50)
