@@ -6,9 +6,6 @@ import imageio
 import time
 import os
 
-# ----THAT SHOULD NOT BE CHANGED----
-MAIN_DIRECTORY = "ising_data"
-
 ###############################################################################
 ###############################################################################
 # CLASS DEFINITION
@@ -25,8 +22,12 @@ class IsingLattice:
         self.h = h
         
         # We randomly initialize the lattice with 0's and 1's
-        lattice_state = \
-            np.random.choice([1,-1],size=(self.lattice_size,self.lattice_size))
+        lattice_state = np.zeros((self.lattice_size,self.lattice_size))
+        for i in np.arange(self.lattice_size):
+            for j in np.arange(self.lattice_size):
+                lattice_state[i][j] = random.getrandbits(1)
+
+        lattice_state = np.where(lattice_state==0, -1, lattice_state)
         
         # We store the configuration 
         self.lattice_state = lattice_state
@@ -207,12 +208,6 @@ def file_name(lattice_size,J,h,temperature,seed):
 ###############################################################################
 def write_to_sub_directory(quantity, file_name):
     
-    # Let us check if the path to data exists
-    if not(os.path.exists(MAIN_DIRECTORY)):
-        os.mkdir(MAIN_DIRECTORY)        
-    
-    # We change directories accordingly
-    os.chdir(MAIN_DIRECTORY)
     if not(os.path.exists(file_name)):
         os.mkdir(file_name)
     os.chdir(file_name)
@@ -225,17 +220,9 @@ def write_to_sub_directory(quantity, file_name):
     
     # We go up into the original directory
     os.chdir('..')
-    os.chdir('..')
 
 ###############################################################################
 def save_image_to_sub_directory(data, directory_name, file_name):
-    
-    # Let us check if the path to data exists
-    if not(os.path.exists(MAIN_DIRECTORY)):
-        os.mkdir(MAIN_DIRECTORY)
-    
-    # We change directories accordingly
-    os.chdir(MAIN_DIRECTORY)
     
     # We check if it exists, if not we make directory
     if not(os.path.exists(directory_name)):
@@ -247,7 +234,6 @@ def save_image_to_sub_directory(data, directory_name, file_name):
     imageio.imwrite(file_name_img, data)
     
     # We go up into the original directory
-    os.chdir('..')
     os.chdir('..')
 
 ###############################################################################
@@ -267,7 +253,14 @@ def collect_monte_carlo_data(lattice_size,J,h, \
     temperature = np.arange(temp_init*TEMPERATURE_SCALE,\
        (temp_final+temp_increment)*TEMPERATURE_SCALE, \
         temp_increment*TEMPERATURE_SCALE).astype(int)
-    
+    if temperature[0] == 0:
+        raise ValueError("ValueError exception thrown. Monte-Carlo does not work properly at T=0.")
+    elif temperature[0] < 0:
+        raise ValueError("ValueError exception thrown. T cannot be a negative value.")
+
+    if temperature[0]<1500:
+        print("For low-temperatures, number of sweeps should be higher.")
+
     # Number of samples are calculated
     # since we take one sample for each T
     NUM_SAMPLES = temperature.size
@@ -275,7 +268,7 @@ def collect_monte_carlo_data(lattice_size,J,h, \
     # We run through T's 
     for i in np.arange(NUM_SAMPLES):
         file_name_lattice = file_name(lattice_size,J,h,temperature[i],SEED)
-        path = MAIN_DIRECTORY + "/" +file_name_lattice
+        path = file_name_lattice
         scale_down_temp = temperature[i]/TEMPERATURE_SCALE
         if os.path.exists(path):
             print("Simulation ", i+1, "/", NUM_SAMPLES, ": ",\
@@ -329,17 +322,14 @@ def collect_monte_carlo_data(lattice_size,J,h, \
 # We end up with 21 different configurations saved as .pkl files. 
 
 SEED = 100
-collect_monte_carlo_data(lattice_size = 65 ,
+collect_monte_carlo_data(lattice_size = 15 ,
                             J = 1.0 , 
                             h = 0.0 ,
-                            temp_init = 1.5 ,
+                            temp_init = 1.0 ,
                             temp_final = 1.5 ,
-                            temp_increment = 0.63 ,
+                            temp_increment = 0.5 ,
                             num_scans = 1000 ,
                             num_scans_4_equilibrium = 1000 ,
                             frequency_sweeps_to_collect_magnetization = 50)
-
-
-
 
 
