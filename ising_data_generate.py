@@ -211,15 +211,14 @@ def file_name(lattice_size,J,h,temperature,seed):
     return f'SQ_L_{lattice_size}_J_{J:.2f}_h_{h:.2f}_T_{temperature}_s_{seed}'
 
 ###############################################################################
-def write_to_sub_directory(quantity, dir_name):
+def write_to_sub_directory(quantity, dir_name,file_name):
     
     if not(os.path.exists(dir_name)):
         os.mkdir(dir_name)
     os.chdir(dir_name)
     
     # Now save with pickle
-    file_name_pkl = dir_name + f"_s_{SEED}.pkl" 
-    open_file = open(file_name_pkl,"wb")
+    open_file = open(file_name,"wb")
     pkl.dump(quantity, open_file)
     open_file.close()
     
@@ -295,18 +294,31 @@ def collect_monte_carlo_data(lattice_size,J,h, \
     # Number of samples are calculated
     # since we take one sample for each T
     NUM_SAMPLES = temperature.size
+
+    
     # We run through T's 
     for i in np.arange(NUM_SAMPLES):
         file_name_lattice = file_name(lattice_size,J,h,temperature[i],SEED)
         dir_name_data = dir_name(lattice_size,J,h,temperature[i])
         scale_down_temp = temperature[i]/TEMPERATURE_SCALE
-        if os.path.exists(dir_name_data):
-            print("Some data for the parameters L=",lattice_size," T=" \
-                ,scale_down_temp," J=",J," h=",h, " Already exists!")
-        if os.path.isfile(dir_name_data + "/" +file_name_lattice + ".pkl"):
-            print('The file for seed=',SEED,' already exists.')
-            continue
 
+        
+        TOTAL_NUM_CONFIGURATIONS = \
+        int(num_scans/frequency_sweeps_to_collect_magnetization)+1
+        file_exists = np.zeros(TOTAL_NUM_CONFIGURATIONS, dtype=bool)
+
+        for configs in np.arange(TOTAL_NUM_CONFIGURATIONS):
+            file_name_existence = file_name_lattice + "_n_"+f"%d"% \
+                            (configs*frequency_sweeps_to_collect_magnetization)
+            if os.path.isfile(dir_name_data + "/" +file_name_existence + ".pkl"):
+                file_exists[configs] = 1  
+        if os.path.exists(dir_name_data) and not(np.all(file_exists)):
+            print((np.argwhere(file_exists==False)[0][0])," data for the parameters L=",lattice_size," T=" \
+                ,scale_down_temp," J=",J," h=",h, " Already exists!\n")
+
+        if np.all(file_exists):
+            print("All data to be generated already exists for Simulation ", i+1, "/", NUM_SAMPLES)
+            continue
         print("Simulation ", i+1, "/", NUM_SAMPLES, ": ")
         
         # Each time generate a new random initial lattice configuration
@@ -323,22 +335,27 @@ def collect_monte_carlo_data(lattice_size,J,h, \
         # We create a dictionary with the following key-value pairs
         data_sample = {'lattice_configuration' : lattice_configs,
                        'energy' : energy_records,
-                       'magnetization' : magnetization_records,
+                       'magnetization' : magnetization_records
         } 
 
-        write_to_sub_directory(data_sample,dir_name_data)
-
-        for img in np.arange(lattice_configs.shape[0]):
+        for img in np.arange(TOTAL_NUM_CONFIGURATIONS):
             file_name_img = file_name_lattice+"_n_"+f"%d"% \
                             (img*frequency_sweeps_to_collect_magnetization)
             file_name_energy_txt = file_name_img + "_energy.txt"
             file_name_magnetization_txt = file_name_img + "_magnetization.txt"
+            
+            data_sample = {'lattice_configuration' : lattice_configs[img],
+                       'energy' : energy_records[img],
+                       'magnetization' : magnetization_records[img]}
 
+            file_name_pkl = file_name_img + ".pkl"
+
+            write_to_sub_directory(data_sample,dir_name_data,file_name_pkl)
             save_image_to_sub_directory(lattice_configs[img].astype(np.uint8),\
                                         dir_name_data, file_name_img)
-            write_txt_energy(data_sample['energy'][img].astype(str), dir_name_data,\
+            write_txt_energy(energy_records[img].astype(str), dir_name_data,\
                              file_name_energy_txt)
-            write_txt_magnetization(data_sample['magnetization'][img].astype(str), dir_name_data,\
+            write_txt_magnetization(magnetization_records[img].astype(str), dir_name_data,\
                 file_name_magnetization_txt)
 
 
@@ -363,14 +380,14 @@ def collect_monte_carlo_data(lattice_size,J,h, \
 # - with the number of sweeps and frequency left unchanged -
 # We end up with 21 different configurations saved as .pkl files. 
 
-SEED = 103
-collect_monte_carlo_data(lattice_size = 100 ,
+SEED = 101
+collect_monte_carlo_data(lattice_size = 5 ,
                             J = 1.0 , 
-                            h = 0.0 ,
+                            h = 1.0 ,
                             temp_init = 2.00 ,
-                            temp_final = 2.50,
+                            temp_final = 2.5,
                             temp_increment = 0.5 ,
-                            num_scans = 1000 ,
+                            num_scans = 500 ,
                             num_scans_4_equilibrium = 1000 ,
                             frequency_sweeps_to_collect_magnetization = 50)
 
