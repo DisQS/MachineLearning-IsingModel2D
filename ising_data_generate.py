@@ -278,13 +278,13 @@ def collect_monte_carlo_data(lattice_size,J,h, \
     if temperature[0]<1500:
         print("For low-temperatures, number of sweeps should be higher.")
 
-    # Number of samples are calculated
+    ###############################################################################
+    # Number of temperatures to be calculated
     # since we take one sample for each T
-    NUM_SAMPLES = temperature.size
-
+    NUM_TEMPS = temperature.size
     
     # We run through T's 
-    for i in np.arange(NUM_SAMPLES):
+    for i in np.arange(NUM_TEMPS):
         file_name_lattice = file_name(lattice_size,J,h,temperature[i],SEED)
         dir_name_data = dir_name(lattice_size,J,h,temperature[i])
         scale_down_temp = temperature[i]/TEMPERATURE_SCALE
@@ -305,12 +305,16 @@ def collect_monte_carlo_data(lattice_size,J,h, \
 
         if np.all(file_exists):
             print("All data to be generated already exists for Simulation ",\
-                 i+1, "/", NUM_SAMPLES)
+                 i+1, "/", NUM_TEMPS)
             continue
-        print("Simulation ", i+1, "/", NUM_SAMPLES, ": ")
-        
+
+        print("Simulation ", i+1, "/", NUM_TEMPS, ", temperature= scale_down_temp: ")
+
+        ###############################################################################
         # Each time generate a new random initial lattice configuration
         ising_lattice = IsingLattice(lattice_size, J,h)
+
+        ###############################################################################
         # Now we go through with the Monte-Carlo Simulation
         lattice_configs, energy_records, magnetization_records = \
             monte_carlo_simulation(ising_lattice,\
@@ -318,10 +322,10 @@ def collect_monte_carlo_data(lattice_size,J,h, \
                                    num_scans,\
                                    num_scans_4_equilibrium,\
                                    frequency_sweeps_to_collect_magnetization)
-                 
+
+        ###############################################################################
         # We write these down to a file
         # We create a dictionary with the following key-value pairs
-
         for img in np.arange(TOTAL_NUM_CONFIGURATIONS):
             file_name_img = file_name_lattice+"_n_"+f"%d"% \
                             (img*frequency_sweeps_to_collect_magnetization)
@@ -368,8 +372,8 @@ collect_monte_carlo_data(lattice_size = 128 ,
                             h = 0.0 ,
                             temp_init = 1.5 ,
                             temp_final = 3.0,
-                            temp_increment = 0.5 ,
-                            num_scans = 1000 ,
+                            temp_increment = 0.25 ,
+                            num_scans = 1100 ,
                             num_scans_4_equilibrium = 1000 ,
                             frequency_sweeps_to_collect_magnetization = 50)
 
