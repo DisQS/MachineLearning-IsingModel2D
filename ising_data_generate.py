@@ -5,6 +5,7 @@ import pickle as pkl
 import imageio
 import time
 import os
+import sys
 
 ###############################################################################
 ###############################################################################
@@ -301,7 +302,7 @@ def collect_monte_carlo_data(lattice_size,J,h, \
         if os.path.exists(dir_name_data) and not(np.all(file_exists)):
             print((np.argwhere(file_exists==False)[0][0]),\
                 " configurations for L=",lattice_size," T=" \
-                ,scale_down_temp," J=",J," h=",h, " already exist!")
+                ,scale_down_temp," J=",J," h=",h, " already exist! \n")
 
         if np.all(file_exists):
             print("ALL requested configurations for L=",lattice_size," T=" \
@@ -368,15 +369,30 @@ def collect_monte_carlo_data(lattice_size,J,h, \
 # - with the number of sweeps and frequency left unchanged -
 # We end up with 21 different configurations saved as .pkl files. 
 
-SEED = 101
-collect_monte_carlo_data(lattice_size = 32 ,
-                            J = 1.0 , 
-                            h = 0.0 ,
-                            temp_init = 1.5 ,
-                            temp_final = 3.0,
-                            temp_increment = 0.25 ,
-                            num_scans = 1300 ,
-                            num_scans_4_equilibrium = 1000 ,
-                            frequency_sweeps_to_collect_magnetization = 50)
+if ( len(sys.argv) == 7 ):
+    #SEED = 101
+    SEED = int(sys.argv[1])
+    lattice_size = int(sys.argv[2])
+    temp_init = float(sys.argv[3]) 
+    temp_final = float(sys.argv[4])
+    temp_inc = float(sys.argv[5])
+    number_configs = int(sys.argv[6])
+
+    sweep_steps = 50
+
+    collect_monte_carlo_data(lattice_size = lattice_size ,
+                             J = 1.0 , 
+                             h = 0.0 ,
+                             temp_init = temp_init ,
+                             temp_final = temp_final,
+                             temp_increment = temp_inc ,
+                             num_scans = sweep_steps * (number_configs-1),
+                             num_scans_4_equilibrium = 1000 ,
+                             frequency_sweeps_to_collect_magnetization = sweep_steps)
+
+else:
+    print ('Number of arguments:', len(sys.argv), 'arguments is less than expected (6) --- ABORTING!')
+    #print ('Argument List:', str(sys.argv))
+
 
 
