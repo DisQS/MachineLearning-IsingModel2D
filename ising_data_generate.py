@@ -199,7 +199,7 @@ def monte_carlo_simulation(ising_lattice,\
             increment_records += 1
     
     # Now we can get the <E> and <m>
-    print("For T = ", temperature, "Simulation is executed in: ", \
+    print("For temperature= ", temperature, "simulation is executed in: ", \
         " %s seconds " % round(time.time() - start_time,2))
     
     if plot_result:
