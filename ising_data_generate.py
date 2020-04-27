@@ -299,11 +299,13 @@ def collect_monte_carlo_data(lattice_size,J,h, \
             if os.path.isfile(dir_name_data + "/" +file_name_existence + ".pkl"):
                 file_exists[configs] = 1  
         if os.path.exists(dir_name_data) and not(np.all(file_exists)):
-            print((np.argwhere(file_exists==False)[0][0])," data for the parameters L=",lattice_size," T=" \
+            print((np.argwhere(file_exists==False)[0][0]),\
+                " data for the parameters L=",lattice_size," T=" \
                 ,scale_down_temp," J=",J," h=",h, " Already exists!\n")
 
         if np.all(file_exists):
-            print("All data to be generated already exists for Simulation ", i+1, "/", NUM_SAMPLES)
+            print("All data to be generated already exists for Simulation ",\
+                 i+1, "/", NUM_SAMPLES)
             continue
         print("Simulation ", i+1, "/", NUM_SAMPLES, ": ")
         
@@ -328,7 +330,8 @@ def collect_monte_carlo_data(lattice_size,J,h, \
             data_sample = {'configuration' : lattice_configs[img],
                        'energy' : energy_records[img],
                        'magnetization' : magnetization_records[img]}
-            txt_data = np.array([data_sample['energy'], data_sample['magnetization']])
+            txt_data = np.array([data_sample['energy'],\
+                 data_sample['magnetization']])
             file_name_pkl = file_name_img + ".pkl"
 
             write_to_sub_directory(data_sample,dir_name_data,file_name_pkl)
