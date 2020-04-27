@@ -282,6 +282,7 @@ def collect_monte_carlo_data(lattice_size,J,h, \
     # Number of temperatures to be calculated
     # since we take one sample for each T
     NUM_TEMPS = temperature.size
+    print("START @ simulation ", i+1, "/", NUM_TEMPS, ", temperature= scale_down_temp: ")
     
     # We run through T's 
     for i in np.arange(NUM_TEMPS):
@@ -301,14 +302,14 @@ def collect_monte_carlo_data(lattice_size,J,h, \
         if os.path.exists(dir_name_data) and not(np.all(file_exists)):
             print((np.argwhere(file_exists==False)[0][0]),\
                 " data for the parameters L=",lattice_size," T=" \
-                ,scale_down_temp," J=",J," h=",h, " already exists!\n")
+                ,scale_down_temp," J=",J," h=",h, " already exists!")
 
         if np.all(file_exists):
             print("All data to be generated already exists for Simulation ",\
                  i+1, "/", NUM_TEMPS)
             continue
 
-        print("Simulation ", i+1, "/", NUM_TEMPS, ", temperature= scale_down_temp: ")
+        print("END @@@ simulation ", i+1, "/", NUM_TEMPS, ", temperature= scale_down_temp: ")
 
         ###############################################################################
         # Each time generate a new random initial lattice configuration
