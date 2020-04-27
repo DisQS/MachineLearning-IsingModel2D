@@ -396,6 +396,7 @@ if ( len(sys.argv) == 7 ):
 
 else:
     print ('Number of arguments:', len(sys.argv), 'arguments is less than expected (6) --- ABORTING!')
+    print ('Usage: python '+sys.argv[0],' seed size T_initial T_final dT number_of_configurations')
     #print ('Argument List:', str(sys.argv))
 
 
