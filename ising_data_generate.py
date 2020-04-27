@@ -260,7 +260,7 @@ def collect_monte_carlo_data(lattice_size,J,h, \
     random.seed(SEED)
     np.random.seed(SEED)
     print("Lattice size: ", lattice_size ,\
-          "x", lattice_size, ". J: ", J, " h: ", h)
+          "x", lattice_size, ", J= ", J, ", h= ", h, ", SEED=", SEED, "\n")
     
     TEMPERATURE_SCALE = 1000
     # Let's scale it up
@@ -305,7 +305,7 @@ def collect_monte_carlo_data(lattice_size,J,h, \
 
         if np.all(file_exists):
             print("ALL requested configurations for L=",lattice_size," T=" \
-                ,scale_down_temp," J=",J," h=",h, " already exist!")
+                ,scale_down_temp," J=",J," h=",h, " already exist! \n")
             continue
 
         ###############################################################################
