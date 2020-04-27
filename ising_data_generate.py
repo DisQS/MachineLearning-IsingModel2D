@@ -301,7 +301,7 @@ def collect_monte_carlo_data(lattice_size,J,h, \
         if os.path.exists(dir_name_data) and not(np.all(file_exists)):
             print((np.argwhere(file_exists==False)[0][0]),\
                 " data for the parameters L=",lattice_size," T=" \
-                ,scale_down_temp," J=",J," h=",h, " Already exists!\n")
+                ,scale_down_temp," J=",J," h=",h, " already exists!\n")
 
         if np.all(file_exists):
             print("All data to be generated already exists for Simulation ",\
