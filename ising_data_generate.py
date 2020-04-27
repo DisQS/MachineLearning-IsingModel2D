@@ -1,3 +1,7 @@
+# SCRTP: module load Anaconda3
+# run as
+# python ising_data_generate.py 11234567 16 3.0 2.0 -0.5 5
+
 import numpy as np
 import matplotlib.pyplot as plt
 import random
