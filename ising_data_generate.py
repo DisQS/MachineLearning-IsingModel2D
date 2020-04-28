@@ -305,8 +305,8 @@ def collect_monte_carlo_data(lattice_size,J,h, \
                 file_exists[configs] = 1  
         if os.path.exists(dir_name_data) and not(np.all(file_exists)):
             print((np.argwhere(file_exists==False)[0][0]),\
-                " configurations for SEED=", SEED, " with L=",lattice_size," T=" \
-                ,scale_down_temp," J=",J," h=",h, " already exist! \n")
+                " previous configurations for SEED=", SEED, " with L=",lattice_size," T=" \
+                ,scale_down_temp," J=",J," h=",h, "\n")
 
         if np.all(file_exists):
             print("ALL requested configurations for SEED=", SEED, " with L=",lattice_size," T=" \
