@@ -31,14 +31,14 @@ cat > ${jobfile} << EOD
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=2
 #SBATCH --mem-per-cpu=2012
-#SBATCH --time=48:00:00
+#SBATCH --time=00:05:00
 
 module load Anaconda3
 
 pwd
 echo "--- working on $temp"
 
-python $codedir/ising_generate_data.py $seed $size $temp $temp 0.1 $configs
+python $codedir/ising_data_generate.py $seed $size $temp $temp 0.1 $configs
 
 echo "--- finished with $temp"
 EOD
@@ -46,8 +46,8 @@ EOD
 cat ${jobfile}
 
 chmod 755 ${jobfile}
-#(sbatch -q devel ${jobfile})
-(sbatch -q taskfarm ${jobfile})
+(sbatch -q devel ${jobfile})
+#(sbatch -q taskfarm ${jobfile})
 #(sbatch ${jobfile})
 
 done
