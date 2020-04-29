@@ -320,7 +320,7 @@ def collect_monte_carlo_data(lattice_size,J,h, \
             continue
 
         ###############################################################################
-        print("START - simulation ", i+1, "/", NUM_TEMPS, ", temperature=", scale_down_temp)
+        print("START - MC simulation ", i+1, "/", NUM_TEMPS, ", temperature=", scale_down_temp)
 
         ###############################################################################
         # Each time generate a new random initial lattice configuration
@@ -356,7 +356,7 @@ def collect_monte_carlo_data(lattice_size,J,h, \
             write_txt_files(txt_data, dir_name_data,\
                 file_name_txt)
 
-        print("END --- simulation ", i+1, "/", NUM_TEMPS, ", temperature=", scale_down_temp, "\n")
+        print("END --- MC simulation ", i+1, "/", NUM_TEMPS, ", temperature=", scale_down_temp, "\n")
 
         ###############################################################################
 
