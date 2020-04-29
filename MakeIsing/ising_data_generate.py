@@ -197,9 +197,11 @@ def monte_carlo_simulation(ising_lattice,\
                 ising_lattice.magnetization()
             lattice_configs[increment_records] = ising_lattice.lattice_state
             increment_records += 1
+            # LOG feature
+            print(temperature, increment_records)
     
     # Now we can get the <E> and <m>
-    print("For temperature= ", temperature, "simulation is executed in: ", \
+    print("For temperature= ", temperature, "MC simulation is executed in: ", \
         " %s seconds " % round(time.time() - start_time,2))
     
     if plot_result:
