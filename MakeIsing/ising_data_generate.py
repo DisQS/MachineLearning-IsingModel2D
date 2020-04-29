@@ -186,8 +186,12 @@ def monte_carlo_simulation(ising_lattice,\
     lattice_configs = np.zeros((TOTAL_NUM_RECORDS,\
                                ising_lattice.lattice_size,\
                                ising_lattice.lattice_size))
+    # LOG feature
+    print(" equilibrating to T=", temperature)
     for equ in np.arange(num_scans_4_equilibrium):
         scan_lattice(ising_lattice,temperature)
+    # LOG feature
+    print(" reached T=", temperature)
 
     for k in np.arange(num_scans+frequency_sweeps_to_collect_magnetization):
         scan_lattice(ising_lattice, temperature)
@@ -197,9 +201,11 @@ def monte_carlo_simulation(ising_lattice,\
                 ising_lattice.magnetization()
             lattice_configs[increment_records] = ising_lattice.lattice_state
             increment_records += 1
+            # LOG feature
+            print(" ", temperature, increment_records)
     
     # Now we can get the <E> and <m>
-    print("For temperature= ", temperature, "simulation is executed in: ", \
+    print("For temperature= ", temperature, "MC simulation is executed in: ", \
         " %s seconds " % round(time.time() - start_time,2))
     
     if plot_result:
@@ -314,7 +320,7 @@ def collect_monte_carlo_data(lattice_size,J,h, \
             continue
 
         ###############################################################################
-        print("START - simulation ", i+1, "/", NUM_TEMPS, ", temperature=", scale_down_temp)
+        print("START - MC simulation ", i+1, "/", NUM_TEMPS, ", temperature=", scale_down_temp)
 
         ###############################################################################
         # Each time generate a new random initial lattice configuration
@@ -350,7 +356,7 @@ def collect_monte_carlo_data(lattice_size,J,h, \
             write_txt_files(txt_data, dir_name_data,\
                 file_name_txt)
 
-        print("END --- simulation ", i+1, "/", NUM_TEMPS, ", temperature=", scale_down_temp, "\n")
+        print("END --- MC simulation ", i+1, "/", NUM_TEMPS, ", temperature=", scale_down_temp, "\n")
 
         ###############################################################################
 
