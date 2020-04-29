@@ -186,8 +186,12 @@ def monte_carlo_simulation(ising_lattice,\
     lattice_configs = np.zeros((TOTAL_NUM_RECORDS,\
                                ising_lattice.lattice_size,\
                                ising_lattice.lattice_size))
+    # LOG feature
+    print(" equilibrating to T=", temperature)
     for equ in np.arange(num_scans_4_equilibrium):
         scan_lattice(ising_lattice,temperature)
+    # LOG feature
+    print(" reached T=", temperature)
 
     for k in np.arange(num_scans+frequency_sweeps_to_collect_magnetization):
         scan_lattice(ising_lattice, temperature)
@@ -198,7 +202,7 @@ def monte_carlo_simulation(ising_lattice,\
             lattice_configs[increment_records] = ising_lattice.lattice_state
             increment_records += 1
             # LOG feature
-            print(temperature, increment_records)
+            print(" ", temperature, increment_records)
     
     # Now we can get the <E> and <m>
     print("For temperature= ", temperature, "MC simulation is executed in: ", \
