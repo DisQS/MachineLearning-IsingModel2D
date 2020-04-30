@@ -23,7 +23,7 @@ do
 
 echo "--- making jobfile for temperature" $temp
 
-jobfile=`printf "$temp.sh"`
+jobfile=`printf "$seed-$temp.sh"`
 echo $jobfile
 
 cat > ${jobfile} << EOD
@@ -31,7 +31,7 @@ cat > ${jobfile} << EOD
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=1
 #SBATCH --mem-per-cpu=2012
-#SBATCH --time=00:30:00
+#SBATCH --time=05:30:00
 
 module load Anaconda3
 
