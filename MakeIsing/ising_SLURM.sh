@@ -31,7 +31,7 @@ cat > ${jobfile} << EOD
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=1
 #SBATCH --mem-per-cpu=2012
-#SBATCH --time=05:30:00
+#SBATCH --time=08:30:00
 
 module load Anaconda3
 
