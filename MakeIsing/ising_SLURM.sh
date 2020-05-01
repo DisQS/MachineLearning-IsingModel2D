@@ -36,11 +36,11 @@ cat > ${jobfile} << EOD
 module load Anaconda3
 
 pwd
-echo "--- working on $temp"
+echo "--- working on temperature $temp for $seed"
 
 python $codedir/ising_data_generate.py $seed $size $temp $temp 0.1 $configs
 
-echo "--- finished with $temp"
+echo "--- finished with temperature $temp and seed $seed"
 EOD
 
 cat ${jobfile}
