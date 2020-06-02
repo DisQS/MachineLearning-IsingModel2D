@@ -1,12 +1,13 @@
 #!/bin/bash
 
-dir=${1:-../data}   
-seed=${2:-1234567}
-size=${3:-10}
-temp_i=${4:-4.0}
-temp_f=${5:-4.0}
-dtemp=${6:-0.1}
-configs=${7:-2}
+lattice=${1:-squ}
+dir=${2:-../data}   
+seed=${3:-1234567}
+size=${4:-10}
+temp_i=${5:-4.0}
+temp_f=${6:-4.0}
+dtemp=${7:-0.1}
+configs=${8:-2}
 
 codedir=`pwd`
 
@@ -15,8 +16,8 @@ echo "ISING: dir=" $dir ", seed=" $seed ", size=" $size \
 
 mkdir -p $dir
 cd $dir
-mkdir -p "L"$size
-cd "L"$size
+mkdir -p $lattice-"L"$size
+cd $lattice-"L"$size
 
 for temp in $(seq $temp_i $dtemp $temp_f) 
 do
@@ -38,7 +39,7 @@ module load Anaconda3
 pwd
 echo "--- working on temperature $temp for $seed"
 
-python $codedir/ising_data_generate.py $seed $size $temp $temp 0.1 $configs
+python $codedir/ising_data_generate_$lattice.py $seed $size $temp $temp 0.1 $configs
 
 echo "--- finished with temperature $temp and seed $seed"
 EOD
