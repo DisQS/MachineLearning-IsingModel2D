@@ -217,11 +217,11 @@ def monte_carlo_simulation(ising_lattice,\
 
 ###############################################################################
 def dir_name(lattice_size,J,h,temperature):
-    return f'SQ_L_{lattice_size}_J_{J:.2f}_h_{h:.2f}_T_{temperature}'
+    return f'TR_L_{lattice_size}_J_{J:.2f}_h_{h:.2f}_T_{temperature}'
 
 ###############################################################################
 def file_name(lattice_size,J,h,temperature,seed):
-    return f'SQ_L_{lattice_size}_J_{J:.2f}_h_{h:.2f}_T_{temperature}_s_{seed}'
+    return f'TR_L_{lattice_size}_J_{J:.2f}_h_{h:.2f}_T_{temperature}_s_{seed}'
 
 ###############################################################################
 def write_to_sub_directory(quantity, dir_name,file_name):
