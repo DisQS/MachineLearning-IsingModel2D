@@ -1,1 +1,0 @@
-This folder is to be deleted and only will be used for testing and presenting the jupyter notebooks.
