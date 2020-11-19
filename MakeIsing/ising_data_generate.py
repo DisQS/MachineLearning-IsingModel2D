@@ -148,6 +148,7 @@ class IsingLattice:
         for i in np.arange(self.lattice_size):
             correlation_func[i] = self.correlation(i)
         correlation_func -= self.magnetization()**2
+        correlation_func = np.where(correlation_func>0,correlation_func, 0)
         if plot:
             plt.plot(correlation_func)
         return correlation_func
@@ -238,13 +239,15 @@ def monte_carlo_simulation(ising_lattice,\
             lattice_configs[increment_records] = ising_lattice.lattice_state
             correlation_function_records[increment_records] = \
                 ising_lattice.correlation_function(True)
+            
             correlation_length_records[increment_records] = \
                 np.sqrt(np.sum(correlation_function_records[increment_records][0:int(ising_lattice.lattice_size/2)]* \
-                (r**2))/np.sum(correlation_function_records[increment_records][0:int(ising_lattice.lattice_size/2)]))
+                (r**2))/ (6*np.sum(correlation_function_records[increment_records][0:int(ising_lattice.lattice_size/2)])))
             increment_records += 1
             # LOG feature
             print(" ", temperature, increment_records)
     
+
     # Now we can get the <E> and <m>
     print("For temperature= ", temperature, "MC simulation is executed in: ", \
         " %s seconds " % round(time.time() - start_time,2))
