@@ -12,6 +12,10 @@ import os
 import sys
 
 ###############################################################################
+T_CRITICAL_SQUARE = 2.26
+CORR_SIZE_100 = 1031
+CORR_SIZE_16 = 42
+###############################################################################
 ###############################################################################
 # CLASS DEFINITION
 class IsingLattice:
@@ -49,7 +53,15 @@ class IsingLattice:
         plt.show()
         if print_info:
             self.print_info()
-    
+
+###############################################################################
+    # Make the initialized configuration a ferromagnet
+    def make_ferromagnetic(self):
+        spin_direction = random.getrandbits(1)
+        if spin_direction == 0:
+            spin_direction = -1
+        self.lattice_state = np.full((self.lattice_size, self.lattice_size),spin_direction)
+
 ###############################################################################
     # Now we define print_info() method. 
     # It will print all the information about the lattice.
@@ -120,39 +132,60 @@ class IsingLattice:
         return  np.sum(self.lattice_state)/ (self.num_sites)
         
 ###############################################################################
- # Correlation Function 
-    
-    def correlation(self,r):
-        # r is the distance of the two spins of which the correlation function
-        # is calculated
+    # Correlation Function 
+    def correlation_function(self, plot=False):
         
+        counter = 0
         
-        correlation_sum = 0
+        correlation_function = np.zeros(self.num_sites**2)
+        r_sq = np.zeros(self.num_sites**2).astype(int)
+        
         for i in np.arange(self.lattice_size):
             for j in np.arange(self.lattice_size):
-                correlation = self.lattice_state[i,j]*self.lattice_state[i,(j-r)\
-                            %self.lattice_size] + \
-                        self.lattice_state[i,j]*self.lattice_state[i,(j+r)\
-                            %self.lattice_size] + \
-                        self.lattice_state[i,j]*self.lattice_state[(i-r)\
-                            %self.lattice_size,j] + \
-                        self.lattice_state[i,j]*self.lattice_state[(i+r)\
-                            %self.lattice_size,j]
-                correlation_sum += correlation
-        return correlation_sum/(4*self.num_sites)
-    
-###############################################################################
+                for k in np.arange(i,self.lattice_size):
+                    check_var = 0
+                    if i==k:
+                        check_var = j
+                    for l in np.arange(check_var,self.lattice_size):
+                        x_distance = abs(j-l)
+                        y_distance = abs(i-k)
+                        
+                        
+                        if x_distance > self.lattice_size/2:
+                            x_distance = abs(self.lattice_size - x_distance)
+                        if y_distance > self.lattice_size/2:
+                            y_distance = abs(self.lattice_size - y_distance) 
+                            
+                        distance = x_distance**2 + y_distance**2
+                        
+                        r_sq[counter] = distance
+                        correlation_function[counter] = self.lattice_state[i,j] * self.lattice_state[k,l]
+                        
+                        counter += 1
+        
+        corr = correlation_function[0:counter]
+        dist = r_sq[0:counter]
 
-    def correlation_function(self, plot=False):
-        correlation_func = np.zeros(self.lattice_size)
-        for i in np.arange(self.lattice_size):
-            correlation_func[i] = self.correlation(i)
-        correlation_func -= self.magnetization()**2
-        correlation_func = np.where(correlation_func>0,correlation_func, 0)
+        sort_ind = np.argsort(dist)
+        sorted_d = np.sort(dist)
+        sorted_c = corr[sort_ind]
+        
+        unique_d, unique_indices_d = np.unique(sorted_d, return_index=True)
+        averaged_c = np.zeros(unique_d.size)
+
+
+        for i in np.arange(averaged_c.size-1):
+            denom = unique_indices_d[i+1]-unique_indices_d[i]
+            averaged_c[i] = np.sum(sorted_c[unique_indices_d[i]:unique_indices_d[i+1]])/denom
+
+        denom = unique_indices_d[unique_indices_d.size-1]-unique_indices_d[unique_indices_d.size-2]
+        averaged_c[averaged_c.size-1] = np.sum(sorted_c[unique_indices_d[unique_indices_d.size-2]:unique_indices_d[unique_indices_d.size-1]]) / denom
+        
         if plot:
-            plt.plot(correlation_func)
-        return correlation_func
-    
+            plt.plot(np.sqrt(unique_d),averaged_c)
+
+        return averaged_c, np.sqrt(unique_d)
+      
 ###############################################################################
 ###############################################################################
 # END OF CLASS
@@ -214,7 +247,7 @@ def monte_carlo_simulation(ising_lattice,\
         int(num_scans/frequency_sweeps_to_collect_magnetization)+1
     energy_records = np.zeros(TOTAL_NUM_RECORDS)
     magnetization_records = np.zeros(TOTAL_NUM_RECORDS)
-    correlation_function_records = np.zeros([TOTAL_NUM_RECORDS,ising_lattice.lattice_size])
+    correlation_function_records = np.zeros([TOTAL_NUM_RECORDS,CORR_SIZE_16])
     correlation_length_records = np.zeros(TOTAL_NUM_RECORDS)
     r = np.arange(int(ising_lattice.lattice_size/2))
     increment_records = 0
@@ -226,6 +259,8 @@ def monte_carlo_simulation(ising_lattice,\
     # LOG feature
     print(" equilibrating to T=", temperature)
     for equ in np.arange(num_scans_4_equilibrium):
+        if temperature <= T_CRITICAL_SQUARE:
+            ising_lattice.make_ferromagnetic()
         scan_lattice(ising_lattice,temperature)
     # LOG feature
     print(" reached T=", temperature)
@@ -237,12 +272,15 @@ def monte_carlo_simulation(ising_lattice,\
             magnetization_records[increment_records] = \
                 ising_lattice.magnetization()
             lattice_configs[increment_records] = ising_lattice.lattice_state
+
+            correlations , distances = ising_lattice.correlation_function(True)
             correlation_function_records[increment_records] = \
-                ising_lattice.correlation_function(True)
+                correlations
             
             correlation_length_records[increment_records] = \
-                np.sqrt(np.sum(correlation_function_records[increment_records][0:int(ising_lattice.lattice_size/2)]* \
-                (r**2))/ (6*np.sum(correlation_function_records[increment_records][0:int(ising_lattice.lattice_size/2)])))
+                np.sqrt(np.sum(correlation_function_records[increment_records]* \
+                (distances))/ (6*np.sum(correlation_function_records[increment_records])) - ising_lattice.magnetization()**2)
+            
             increment_records += 1
             # LOG feature
             print(" ", temperature, increment_records)
@@ -256,7 +294,7 @@ def monte_carlo_simulation(ising_lattice,\
         ising_lattice.plot_lattice()
     
     return lattice_configs, energy_records, magnetization_records, \
-        correlation_function_records, correlation_length_records
+        correlation_function_records, correlation_length_records, distances
 
 ###############################################################################
 def dir_name(lattice_size,J,h,temperature):
@@ -373,7 +411,7 @@ def collect_monte_carlo_data(lattice_size,J,h, \
 
         ###############################################################################
         # Now we go through with the Monte-Carlo Simulation
-        lattice_configs, energy_records, magnetization_records, correlation_function_records, correlation_length_records = \
+        lattice_configs, energy_records, magnetization_records, correlation_function_records, correlation_length_records, distances = \
             monte_carlo_simulation(ising_lattice,\
                                    scale_down_temp,\
                                    num_scans,\
@@ -392,14 +430,15 @@ def collect_monte_carlo_data(lattice_size,J,h, \
                        'energy' : energy_records[img],
                        'magnetization' : magnetization_records[img],
                        'correlation_length' : correlation_length_records[img],
-                       'correlation_function' : correlation_function_records[img]}
+                       'correlation_function' : correlation_function_records[img],
+                       'distances' : distances}
             
             txt_data = np.array([data_sample['energy'],\
                  data_sample['magnetization'], data_sample['correlation_length']])
             correlation_function_txt_data = np.array(data_sample['correlation_function'])
             file_name_pkl = file_name_img + ".pkl"
             file_name_correlation_function = file_name_img + "_correlation_function.txt"
-            
+            file_name_distances = file_name_img + "_distances.txt"
             
             write_to_sub_directory(data_sample,dir_name_data,file_name_pkl)
             save_image_to_sub_directory(lattice_configs[img].astype(np.uint8),\
@@ -407,6 +446,7 @@ def collect_monte_carlo_data(lattice_size,J,h, \
             write_txt_files(txt_data, dir_name_data,\
                 file_name_txt)
             write_txt_files(correlation_function_txt_data, dir_name_data, file_name_correlation_function)
+            write_txt_files(distances, dir_name_data, file_name_distances)
 
         print("END --- MC simulation ", i+1, "/", NUM_TEMPS, ", temperature=", scale_down_temp, "\n")
 
@@ -440,7 +480,7 @@ if ( len(sys.argv) == 7 ):
     temp_inc = float(sys.argv[5])
     number_configs = int(sys.argv[6])
 
-    sweep_steps = 50
+    sweep_steps = 500
 
     collect_monte_carlo_data(lattice_size = lattice_size ,
                              J = 1.0 , 
