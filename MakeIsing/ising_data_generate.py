@@ -13,8 +13,7 @@ import sys
 
 ###############################################################################
 T_CRITICAL_SQUARE = 2.26
-CORR_SIZE_100 = 1031
-CORR_SIZE_16 = 42
+CORR_SIZE = 294
 ###############################################################################
 ###############################################################################
 # CLASS DEFINITION
@@ -184,7 +183,7 @@ class IsingLattice:
         if plot:
             plt.plot(np.sqrt(unique_d),averaged_c)
 
-        return averaged_c, np.sqrt(unique_d)
+        return averaged_c - self.magnetization()**2, np.sqrt(unique_d)
       
 ###############################################################################
 ###############################################################################
@@ -247,9 +246,8 @@ def monte_carlo_simulation(ising_lattice,\
         int(num_scans/frequency_sweeps_to_collect_magnetization)+1
     energy_records = np.zeros(TOTAL_NUM_RECORDS)
     magnetization_records = np.zeros(TOTAL_NUM_RECORDS)
-    correlation_function_records = np.zeros([TOTAL_NUM_RECORDS,CORR_SIZE_16])
+    correlation_function_records = np.zeros([TOTAL_NUM_RECORDS,CORR_SIZE])
     correlation_length_records = np.zeros(TOTAL_NUM_RECORDS)
-    r = np.arange(int(ising_lattice.lattice_size/2))
     increment_records = 0
     
     # We will return this n-dimensional 
@@ -276,11 +274,18 @@ def monte_carlo_simulation(ising_lattice,\
             correlations , distances = ising_lattice.correlation_function(True)
             correlation_function_records[increment_records] = \
                 correlations
-            
-            correlation_length_records[increment_records] = \
-                np.sqrt(np.sum(correlation_function_records[increment_records]* \
-                (distances))/ (6*np.sum(correlation_function_records[increment_records])) - ising_lattice.magnetization()**2)
-            
+                           
+            correlation_negative_check = np.sum(np.abs(correlation_function_records[increment_records])* \
+                (distances))
+            correlation_zero_check = 6*np.sum(np.abs(correlation_function_records[increment_records]))
+            print(correlation_negative_check/correlation_zero_check)
+            if correlation_zero_check==0:
+                correlation_length_records[increment_records] = 0
+            elif correlation_negative_check/correlation_zero_check<0:
+                correlation_length_records[increment_records] = 0
+            else:
+                correlation_length_records[increment_records] = np.sqrt(correlation_negative_check/correlation_zero_check)
+
             increment_records += 1
             # LOG feature
             print(" ", temperature, increment_records)
